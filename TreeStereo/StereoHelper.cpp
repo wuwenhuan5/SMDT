@@ -45,7 +45,7 @@ THE SOFTWARE.
 inline unsigned char rgb_2_gray(unsigned char * in) { return((unsigned char)(0.299*in[2]+0.587*in[1]+0.114*in[0]+0.5));} //BGR格式
 
 #define CENSUS_H 5
-#define CENSUS_W 5
+#define CENSUS_W 7
 #define CENSUS_BIT (CENSUS_H*CENSUS_W-1)
 
 //-----------------Sobel图像
@@ -584,7 +584,7 @@ cv::Mat CDisparityHelper::GetRight_GradXGradY_Census_MatchingCost(cv::Mat imL, c
 //-----------------------------------Gray+GradX+GradY
 cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
-#define CENSUS_H 7
+#define CENSUS_H 5
 #define CENSUS_W 7
 #define CENSUS_BIT (3*CENSUS_H*CENSUS_W-3)  //覆盖前面的CENSUS_BIT定义
 
@@ -712,7 +712,7 @@ cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv
 
 cv::Mat CDisparityHelper::GetRight_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
-#define CENSUS_H 7
+#define CENSUS_H 5
 #define CENSUS_W 7
 #define CENSUS_BIT (3*CENSUS_H*CENSUS_W-3)  //覆盖前面的CENSUS_BIT定义
 
