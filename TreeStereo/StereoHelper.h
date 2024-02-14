@@ -35,45 +35,45 @@ THE SOFTWARE.
 
 class CDisparityHelper {
 public:
-	cv::Mat CDisparityHelper::GetCensusMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //»Ò¶ÈCensus±ä»»
-	cv::Mat CDisparityHelper::GetRightCensusMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //¼ÆËãÓÒ´ú¼ÛÌå
+	cv::Mat CDisparityHelper::GetCensusMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //ç°åº¦Censuså˜æ¢
+	cv::Mat CDisparityHelper::GetRightCensusMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //è®¡ç®—å³ä»£ä»·ä½“
 
 	cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel);
 	cv::Mat CDisparityHelper::GetRightMatchingCost_CrossScale_AdGradient(const cv::Mat imL, const cv::Mat imR, int maxLevel);
 
-	cv::Mat CDisparityHelper::Get_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //GradXGradYµÄCensus±ä»»¼¶Áª
-	cv::Mat CDisparityHelper::GetRight_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //¼ÆËãÓÒ´ú¼ÛÌå
+	cv::Mat CDisparityHelper::Get_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //GradXGradYçš„Censuså˜æ¢çº§è”
+	cv::Mat CDisparityHelper::GetRight_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //è®¡ç®—å³ä»£ä»·ä½“
 
-	cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //GrayGradXGradYµÄCensus±ä»»¼¶Áª
-	cv::Mat CDisparityHelper::GetRight_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel);//¼ÆËãÓÒ´ú¼ÛÌå
+	cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //GrayGradXGradYçš„Censuså˜æ¢çº§è”
+	cv::Mat CDisparityHelper::GetRight_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel);//è®¡ç®—å³ä»£ä»·ä½“
 
-	cv::Mat CDisparityHelper::Get_CensusPlusGradXGradYCensus_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel, float th); //Gray+GradXGradYµÄCensus±ä»»¼ÓÈ¨ºÍ
-	cv::Mat CDisparityHelper::GetRight_CensusPlusGradXGradYCensus_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel, float th);//¼ÆËãÓÒ´ú¼ÛÌå
+	cv::Mat CDisparityHelper::Get_CensusPlusGradXGradYCensus_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel, float th); //Gray+GradXGradYçš„Censuså˜æ¢åŠ æƒå’Œ
+	cv::Mat CDisparityHelper::GetRight_CensusPlusGradXGradYCensus_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel, float th);//è®¡ç®—å³ä»£ä»·ä½“
 
 	cv::Mat CDisparityHelper::Get_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //AD+Census
 	cv::Mat CDisparityHelper::GetRight_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel);
 	//--------------------------------
 
-	cv::Mat GetGradient(cv::InputArray image); //Ê¹ÓÃSTµÄGradiend¼ÆËã´ú¼ÛÌå,ºÍMSTµÄ´úÂëÀàËÆ
-	cv::Mat GetMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //Ê¹ÓÃSTµÄADGradiend¼ÆËã´ú¼ÛÌå
+	cv::Mat GetGradient(cv::InputArray image); //ä½¿ç”¨STçš„Gradiendè®¡ç®—ä»£ä»·ä½“,å’ŒMSTçš„ä»£ç ç±»ä¼¼
+	cv::Mat GetMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel); //ä½¿ç”¨STçš„ADGradiendè®¡ç®—ä»£ä»·ä½“
 	//-------------------------------
 
-	cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel); //Ê¹ÓÃMeshSteroµÄADGradiend¼ÆËã´ú¼ÛÌå
-	cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel); //ä½¿ç”¨MeshSteroçš„ADGradiendè®¡ç®—ä»£ä»·ä½“
+	//cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel);
 
-	cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel); //Ê¹ÓÃMeshSteroµÄAdCensus¼ÆËã´ú¼ÛÌå
-	cv::Mat CDisparityHelper::GetRightMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel); //ä½¿ç”¨MeshSteroçš„AdCensusè®¡ç®—ä»£ä»·ä½“
+	//cv::Mat CDisparityHelper::GetRightMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel);
 
-	cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel);
-	cv::Mat CDisparityHelper::GetMatchingCost_ADCensusStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_ADCensusStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel);
 	
-	cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(std::string &filePathImageL, std::string &filePathImageR, int maxLevel); //Ê¹ÓÃSGMStereoµÄCensusGradient¼ÆËã´ú¼ÛÌå
-	cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(const cv::Mat imL, const cv::Mat imR, int maxLevel);
-	cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_CensusGradient(cv::Mat imL, cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(std::string &filePathImageL, std::string &filePathImageR, int maxLevel); //ä½¿ç”¨SGMStereoçš„CensusGradientè®¡ç®—ä»£ä»·ä½“
+	//cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(const cv::Mat imL, const cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_CensusGradient(cv::Mat imL, cv::Mat imR, int maxLevel);
 	
-	cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_Census(cv::Mat imL, cv::Mat imR, int maxLevel);
-	cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_Census(cv::Mat imL, cv::Mat imR, int maxLevel);
-	cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_Census(cv::Mat imL, cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_Census(cv::Mat imL, cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_Census(cv::Mat imL, cv::Mat imR, int maxLevel);
+	//cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_Census(cv::Mat imL, cv::Mat imR, int maxLevel);
 	cv::Mat CDisparityHelper::GetMatchingCost_RWR(cv::Mat imL, cv::Mat imR, int maxLevel);
 	cv::Mat CDisparityHelper::GetRightMatchingCost_RWR(cv::Mat imL, cv::Mat imR, int maxLevel);
 
