@@ -33,33 +33,33 @@ THE SOFTWARE.
 
 #include "StereoHelper.h"
 #include "Toolkit.h"
-#include "../MeshStereo/MatchingCost.h"
-#include "../CrossScaleStereo/GrdCC.h"
-#include "../CrossScaleStereo/CenCC.h"
-#include "../CrossScaleStereo/CGCC.h"
-#include "../PatchMatchStereo/Utilities.h"
-#include "../PatchMatchStereo/PatchMatchStereo.h"
-#include "../ADCensusStereo/adcensuscv.h"
+//#include "../MeshStereo/MatchingCost.h"
+//#include "../CrossScaleStereo/GrdCC.h"
+//#include "../CrossScaleStereo/CenCC.h"
+//#include "../CrossScaleStereo/CGCC.h"
+//#include "../PatchMatchStereo/Utilities.h"
+//#include "../PatchMatchStereo/PatchMatchStereo.h"
+//#include "../ADCensusStereo/adcensuscv.h"
 
 
-inline unsigned char rgb_2_gray(unsigned char * in) { return((unsigned char)(0.299*in[2]+0.587*in[1]+0.114*in[0]+0.5));} //BGR¸ñÊ½
+inline unsigned char rgb_2_gray(unsigned char * in) { return((unsigned char)(0.299*in[2]+0.587*in[1]+0.114*in[0]+0.5));} //BGRæ ¼å¼
 
 #define CENSUS_H 5
 #define CENSUS_W 5
 #define CENSUS_BIT (CENSUS_H*CENSUS_W-1)
 
-//-----------------SobelÍ¼Ïñ
-cv::Mat sobel_grad(const Mat img) //imgÊÇrgbÍ¼Ïñ
+//-----------------Sobelå›¾åƒ
+cv::Mat sobel_grad(const Mat img) //imgæ˜¯rgbå›¾åƒ
 {
 	CV_Assert(img.type() == CV_8UC3);
 	Mat src = img.clone();
 	cvtColor(src, src, CV_BGR2RGB);
 	// MeanFilter(src, src, 1);
 	Mat src_gray;
-	//¸ßË¹Ä£ºı  
+	//é«˜æ–¯æ¨¡ç³Š  
 	//GaussianBlur(src, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
 
-	//×ª³É»Ò¶ÈÍ¼  
+	//è½¬æˆç°åº¦å›¾  
 	cvtColor(src, src_gray, CV_RGB2GRAY);
 	Mat grad_xy, grad_x, grad_y;
 	Mat abs_grad_x, abs_grad_y;
@@ -68,15 +68,15 @@ cv::Mat sobel_grad(const Mat img) //imgÊÇrgbÍ¼Ïñ
 	int delta = 0;
 	int ddepth = CV_16S;
 
-	//x·½ÏòÌİ¶È¼ÆËã  
-	Sobel(src_gray, grad_x, ddepth, 1, 0, 5, scale, delta, BORDER_DEFAULT); // ´°¿Ú3¸Ä³É1ÄØ£¿
+	//xæ–¹å‘æ¢¯åº¦è®¡ç®—  
+	Sobel(src_gray, grad_x, ddepth, 1, 0, 5, scale, delta, BORDER_DEFAULT); // çª—å£3æ”¹æˆ1å‘¢ï¼Ÿ
 	convertScaleAbs(grad_x, abs_grad_x); //an unsigned 8-bit type:
 
 
-	//y·½ÏòÌİ¶È¼ÆËã  
+	//yæ–¹å‘æ¢¯åº¦è®¡ç®—  
 	Sobel(src_gray, grad_y, ddepth, 0, 1, 5, scale, delta, BORDER_DEFAULT);
 	convertScaleAbs(grad_y, abs_grad_y);
-	//¼ÓÈ¨ºÍ  
+	//åŠ æƒå’Œ  
 
 	addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad_xy);
 
@@ -86,17 +86,17 @@ cv::Mat sobel_grad(const Mat img) //imgÊÇrgbÍ¼Ïñ
 
 }
 
-cv::Mat sobel_gradX(const Mat img) //imgÊÇrgbÍ¼Ïñ
+cv::Mat sobel_gradX(const Mat img) //imgæ˜¯rgbå›¾åƒ
 {
 	CV_Assert(img.type() == CV_8UC3);
 	Mat src = img.clone();
 	cvtColor(src, src, CV_BGR2RGB);
 	// MeanFilter(src, src, 1);
 	Mat src_gray;
-	//¸ßË¹Ä£ºı  
+	//é«˜æ–¯æ¨¡ç³Š  
 	//GaussianBlur(src, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
 
-	//×ª³É»Ò¶ÈÍ¼  
+	//è½¬æˆç°åº¦å›¾  
 	cvtColor(src, src_gray, CV_RGB2GRAY);
 	Mat grad_xy, grad_x, grad_y;
 	Mat abs_grad_x, abs_grad_y;
@@ -105,7 +105,7 @@ cv::Mat sobel_gradX(const Mat img) //imgÊÇrgbÍ¼Ïñ
 	int delta = 0;
 	int ddepth = CV_16S;
 
-	//x·½ÏòÌİ¶È¼ÆËã  
+	//xæ–¹å‘æ¢¯åº¦è®¡ç®—  
 	Sobel(src_gray, grad_x, ddepth, 1, 0, 5, scale, delta, BORDER_DEFAULT);
 	convertScaleAbs(grad_x, abs_grad_x); //an unsigned 8-bit type:
 
@@ -115,17 +115,17 @@ cv::Mat sobel_gradX(const Mat img) //imgÊÇrgbÍ¼Ïñ
 }
 
 
-cv::Mat sobel_gradY(const Mat img) //imgÊÇrgbÍ¼Ïñ
+cv::Mat sobel_gradY(const Mat img) //imgæ˜¯rgbå›¾åƒ
 {
 	CV_Assert(img.type() == CV_8UC3);
 	Mat src = img.clone();
 	cvtColor(src, src, CV_BGR2RGB);
 	// MeanFilter(src, src, 1);
 	Mat src_gray;
-	//¸ßË¹Ä£ºı  
+	//é«˜æ–¯æ¨¡ç³Š  
 	//GaussianBlur(src, src, Size(3, 3), 0, 0, BORDER_DEFAULT);
 
-	//×ª³É»Ò¶ÈÍ¼  
+	//è½¬æˆç°åº¦å›¾  
 	cvtColor(src, src_gray, CV_RGB2GRAY);
 	Mat grad_xy, grad_x, grad_y;
 	Mat abs_grad_x, abs_grad_y;
@@ -134,10 +134,10 @@ cv::Mat sobel_gradY(const Mat img) //imgÊÇrgbÍ¼Ïñ
 	int delta = 0;
 	int ddepth = CV_16S;
 
-	//y·½ÏòÌİ¶È¼ÆËã  
+	//yæ–¹å‘æ¢¯åº¦è®¡ç®—  
 	Sobel(src_gray, grad_y, ddepth, 0, 1, 5, scale, delta, BORDER_DEFAULT);
 	convertScaleAbs(grad_y, abs_grad_y);
-	//¼ÓÈ¨ºÍ  
+	//åŠ æƒå’Œ  
 
 
 	return abs_grad_y;
@@ -145,15 +145,15 @@ cv::Mat sobel_gradY(const Mat img) //imgÊÇrgbÍ¼Ïñ
 
 
 
-//----------------------------Census±ä»»
+//----------------------------Censuså˜æ¢
 cv::Mat CDisparityHelper::GetCensusMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
 #define CENSUS_H 5
 #define CENSUS_W 7
 #define CENSUS_BIT (CENSUS_H*CENSUS_W-1)
 
-	int height = imL.rows;//¸ß¶È
-	int width = imL.cols;//¿í¶È
+	int height = imL.rows;//é«˜åº¦
+	int width = imL.cols;//å®½åº¦
 
 
 	Mat lGray, rGray;
@@ -177,37 +177,37 @@ cv::Mat CDisparityHelper::GetCensusMatchingCost(cv::Mat imL, cv::Mat imR, int ma
 	int H_WD = CENSUS_H / 2;
 	int W_WD = CENSUS_W / 2;
 	bitset<CENSUS_BIT>* lCode = new bitset<CENSUS_BIT>[height * width];
-	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//Ã¿¸öÏñËØÓĞ80bitÎ»ĞòÁĞ
-	bitset<CENSUS_BIT>* pLCode = lCode;//lCode´æ×ÅÊı×éÊ×µØÖ·
+	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//æ¯ä¸ªåƒç´ æœ‰80bitä½åºåˆ—
+	bitset<CENSUS_BIT>* pLCode = lCode;//lCodeå­˜ç€æ•°ç»„é¦–åœ°å€
 	bitset<CENSUS_BIT>* pRCode = rCode;
 	for (int y = 0; y < height; y++) {
-		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//µÚyĞĞ
+		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* pRData = (uchar*)(rGray.ptr<uchar>(y));
-		for (int x = 0; x < width; x++) { //µÚxÁĞ
+		for (int x = 0; x < width; x++) { //ç¬¬xåˆ—
 			int bitCnt = 0;
 			for (int wy = -H_WD; wy <= H_WD; wy++) {
-				//int qy = (y + wy + height) % height;//ÕâÀï+heiÊÇÎªÁËÊµÏÖÑ­»·
+				//int qy = (y + wy + height) % height;//è¿™é‡Œ+heiæ˜¯ä¸ºäº†å®ç°å¾ªç¯
 				int qy = y + wy;
 				if (qy < 0) qy = 0;
 				if (qy >= height) qy = height - 1;
 				uchar* qLData = (uchar*)(lGray.ptr<uchar>(qy));
 				uchar* qRData = (uchar*)(rGray.ptr<uchar>(qy));
 				for (int wx = -W_WD; wx <= W_WD; wx++) {
-					if (wy != 0 || wx != 0) { //ÖĞĞÄµã
+					if (wy != 0 || wx != 0) { //ä¸­å¿ƒç‚¹
 						//int qx = (x + wx + width) % width;
 						int qx = x + wx;
 						if (qx < 0) qx = 0;
 						if (qx >= width) qx = width - 1;
-						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]); // pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]); // pRData[ x ]ÊÇÖĞĞÄµã												
+						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]); // pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]); // pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹												
 						bitCnt++;
-						//0µ½79
+						//0åˆ°79
 					}
 				}
 			}
 
 			/*
-			//Ôö¼ÓÉÏÏÂ¶Ô½ÇµÄ±È½Ï
+			//å¢åŠ ä¸Šä¸‹å¯¹è§’çš„æ¯”è¾ƒ
 			int left = max(0, x - 1);
 			int right = min(x + 1, width - 1);
 			int up = max(0, y - 1);
@@ -238,7 +238,7 @@ cv::Mat CDisparityHelper::GetCensusMatchingCost(cv::Mat imL, cv::Mat imR, int ma
 			for (int d = 0; d < maxLevel; d++) {
 				costVolPtr(y, x, d) = CENSUS_BIT + 1; // 
 				if (x - d >= 0) {
-					rB = rCode[index + x - d];//x-dÊÇÓÒÊÓÍ¼ÖĞindexĞĞµÄµÚx-d¸öÏñËØ
+					rB = rCode[index + x - d];//x-dæ˜¯å³è§†å›¾ä¸­indexè¡Œçš„ç¬¬x-dä¸ªåƒç´ 
 					costVolPtr(y, x, d) = (lB ^ rB).count();
 				}
 
@@ -253,14 +253,14 @@ cv::Mat CDisparityHelper::GetCensusMatchingCost(cv::Mat imL, cv::Mat imR, int ma
 }
 
 
-cv::Mat CDisparityHelper::GetRightCensusMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel) //Ö±½Ó¼ÆËãÓÒ´ú¼ÛÌå
+cv::Mat CDisparityHelper::GetRightCensusMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel) //ç›´æ¥è®¡ç®—å³ä»£ä»·ä½“
 {
 #define CENSUS_H 5
 #define CENSUS_W 7
 #define CENSUS_BIT (CENSUS_H*CENSUS_W-1)
 
-	int height = imL.rows;//¸ß¶È
-	int width = imL.cols;//¿í¶È
+	int height = imL.rows;//é«˜åº¦
+	int width = imL.cols;//å®½åº¦
 
 
 	Mat lGray, rGray;
@@ -284,16 +284,16 @@ cv::Mat CDisparityHelper::GetRightCensusMatchingCost(cv::Mat imL, cv::Mat imR, i
 	int H_WD = CENSUS_H / 2;
 	int W_WD = CENSUS_W / 2;
 	bitset<CENSUS_BIT>* lCode = new bitset<CENSUS_BIT>[height * width];
-	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//Ã¿¸öÏñËØÓĞ80bitÎ»ĞòÁĞ
-	bitset<CENSUS_BIT>* pLCode = lCode;//lCode´æ×ÅÊı×éÊ×µØÖ·
+	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//æ¯ä¸ªåƒç´ æœ‰80bitä½åºåˆ—
+	bitset<CENSUS_BIT>* pLCode = lCode;//lCodeå­˜ç€æ•°ç»„é¦–åœ°å€
 	bitset<CENSUS_BIT>* pRCode = rCode;
 	for (int y = 0; y < height; y++) {
-		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//µÚyĞĞ
+		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* pRData = (uchar*)(rGray.ptr<uchar>(y));
-		for (int x = 0; x < width; x++) { //µÚxÁĞ
+		for (int x = 0; x < width; x++) { //ç¬¬xåˆ—
 			int bitCnt = 0;
 			for (int wy = -H_WD; wy <= H_WD; wy++) {
-				//int qy = (y + wy + height) % height;//ÕâÀï+heiÊÇÎªÁËÊµÏÖÑ­»·
+				//int qy = (y + wy + height) % height;//è¿™é‡Œ+heiæ˜¯ä¸ºäº†å®ç°å¾ªç¯
 				int qy = y + wy;
 				if (qy < 0) qy = 0;
 				if (qy >= height) qy = height - 1;
@@ -301,22 +301,22 @@ cv::Mat CDisparityHelper::GetRightCensusMatchingCost(cv::Mat imL, cv::Mat imR, i
 				uchar* qLData = (uchar*)(lGray.ptr<uchar>(qy));
 				uchar* qRData = (uchar*)(rGray.ptr<uchar>(qy));
 				for (int wx = -W_WD; wx <= W_WD; wx++) {
-					if (wy != 0 || wx != 0) { //ÖĞĞÄµã
+					if (wy != 0 || wx != 0) { //ä¸­å¿ƒç‚¹
 						//int qx = (x + wx + width) % width;
 						int qx = x + wx;
 						if (qx < 0) qx = 0;
 						if (qx >= width) qx = width - 1;
 
-						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]ÊÇÖĞĞÄµã
-						bitCnt++; //0µ½79
+						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						bitCnt++; //0åˆ°79
 					}
 
 				}
 			}
 
 			/*
-			//Ôö¼ÓÉÏÏÂ¶Ô½ÇµÄ±È½Ï
+			//å¢åŠ ä¸Šä¸‹å¯¹è§’çš„æ¯”è¾ƒ
 			int left = max(0, x - 1);
 			int right = min(x + 1, width - 1);
 			int up = max(0, y - 1);
@@ -362,14 +362,14 @@ cv::Mat CDisparityHelper::GetRightCensusMatchingCost(cv::Mat imL, cv::Mat imR, i
 
 	return RightcostVol;
 }
-//-----------------------------Census½áÊø
+//-----------------------------Censusç»“æŸ
 
-// ÒÔleft imageÎª²Î¿¼Í¼Ïñ£¬½«gradXµÄbit stringºÍgradYµÄbit stringÆ´½ÓÆğÀ´£¬È»ºó¼ÆËãÕâ¸öÆ´½ÓºóµÄ³¤bitstringµÄººÃ÷¾àÀë¡£
+// ä»¥left imageä¸ºå‚è€ƒå›¾åƒï¼Œå°†gradXçš„bit stringå’ŒgradYçš„bit stringæ‹¼æ¥èµ·æ¥ï¼Œç„¶åè®¡ç®—è¿™ä¸ªæ‹¼æ¥åçš„é•¿bitstringçš„æ±‰æ˜è·ç¦»ã€‚
 cv::Mat CDisparityHelper::Get_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
     #define CENSUS_H 5
     #define CENSUS_W 7
-    #define CENSUS_BIT (2*CENSUS_H*CENSUS_W-2)  //¸²¸ÇÇ°ÃæµÄCENSUS_BIT¶¨Òå
+    #define CENSUS_BIT (2*CENSUS_H*CENSUS_W-2)  //è¦†ç›–å‰é¢çš„CENSUS_BITå®šä¹‰
 	Mat limg = imL.clone();
 	Mat rimg = imR.clone();
 
@@ -381,11 +381,11 @@ cv::Mat CDisparityHelper::Get_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Ma
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, height, width, maxLevel);
 
 
-	Mat lSobelX, rSobelX; //×óÓÒÊÓÍ¼µÄSobel_XÌİ¶ÈÍ¼Ïñ
+	Mat lSobelX, rSobelX; //å·¦å³è§†å›¾çš„Sobel_Xæ¢¯åº¦å›¾åƒ
 	lSobelX = sobel_gradX(limg);
 	rSobelX = sobel_gradX(rimg);
 
-	Mat lSobelY, rSobelY; //×óÓÒÊÓÍ¼µÄSobel_YÌİ¶ÈÍ¼Ïñ
+	Mat lSobelY, rSobelY; //å·¦å³è§†å›¾çš„Sobel_Yæ¢¯åº¦å›¾åƒ
 	lSobelY = sobel_gradY(limg);
 	rSobelY = sobel_gradY(rimg);
 
@@ -398,19 +398,19 @@ cv::Mat CDisparityHelper::Get_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Ma
 	int nn = CENSUS_BIT;
 
 	bitset<CENSUS_BIT>* lCode = new bitset<CENSUS_BIT>[height * width];
-	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//Ã¿¸öÏñËØÓĞ80bitÎ»ĞòÁĞ
-	bitset<CENSUS_BIT>* pLCode = lCode;//lCode´æ×ÅÊı×éÊ×µØÖ·
+	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//æ¯ä¸ªåƒç´ æœ‰80bitä½åºåˆ—
+	bitset<CENSUS_BIT>* pLCode = lCode;//lCodeå­˜ç€æ•°ç»„é¦–åœ°å€
 	bitset<CENSUS_BIT>* pRCode = rCode;
 	for (int y = 0; y < height; y++) {
-		uchar* pLData = (uchar*)(lSobelX.ptr<uchar>(y));//µÚyĞĞ
+		uchar* pLData = (uchar*)(lSobelX.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* pRData = (uchar*)(rSobelX.ptr<uchar>(y));
 
-		uchar* gpLData = (uchar*)(lSobelY.ptr<uchar>(y));//µÚyĞĞ
+		uchar* gpLData = (uchar*)(lSobelY.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* gpRData = (uchar*)(rSobelY.ptr<uchar>(y));
-		for (int x = 0; x < width; x++) { //µÚxÁĞ
+		for (int x = 0; x < width; x++) { //ç¬¬xåˆ—
 			int bitCnt = 0;
 			for (int wy = -H_WD; wy <= H_WD; wy++) {
-				//int qy = (y + wy + height) % height;//ÕâÀï+heiÊÇÎªÁËÊµÏÖÑ­»·
+				//int qy = (y + wy + height) % height;//è¿™é‡Œ+heiæ˜¯ä¸ºäº†å®ç°å¾ªç¯
 				int qy = y + wy;
 				if (qy < 0) qy = 0;
 				if (qy >= height) qy = height - 1;
@@ -420,19 +420,19 @@ cv::Mat CDisparityHelper::Get_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Ma
 				uchar* gqLData = (uchar*)(lSobelY.ptr<uchar>(qy));
 				uchar* gqRData = (uchar*)(rSobelY.ptr<uchar>(qy));
 				for (int wx = -W_WD; wx <= W_WD; wx++) {
-					if (wy != 0 || wx != 0) { //ÖĞĞÄµã
+					if (wy != 0 || wx != 0) { //ä¸­å¿ƒç‚¹
 											  //int qx = (x + wx + width) % width;
 						int qx = x + wx;
 						if (qx < 0) qx = 0;
 						if (qx >= width) qx = width - 1;
-						//±È½Ï»Ò¶È
-						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]ÊÇÖĞĞÄµã	
+						//æ¯”è¾ƒç°åº¦
+						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹	
 						bitCnt++;
 
-						//±È½ÏÌİ¶È£¬ÔÚ»Ò¶ÈºóÃæ½øĞĞÆ´½Ó
-						(*pLCode)[bitCnt] = (gpLData[x] > gqLData[qx]);// gpLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (gpRData[x] > gqRData[qx]);// gpRData[ x ]ÊÇÖĞĞÄµã	
+						//æ¯”è¾ƒæ¢¯åº¦ï¼Œåœ¨ç°åº¦åé¢è¿›è¡Œæ‹¼æ¥
+						(*pLCode)[bitCnt] = (gpLData[x] > gqLData[qx]);// gpLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (gpRData[x] > gqRData[qx]);// gpRData[ x ]æ˜¯ä¸­å¿ƒç‚¹	
 						bitCnt++;
 						//
 					}
@@ -454,7 +454,7 @@ cv::Mat CDisparityHelper::Get_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Ma
 			for (int d = 0; d < maxLevel; d++) {
 				costVolPtr(y, x, d) = CENSUS_BIT + 1;
 				if (x - d >= 0) {
-					rB = rCode[index + x - d];//x-dÊÇÓÒÊÓÍ¼ÖĞindexĞĞµÄµÚx-d¸öÏñËØ
+					rB = rCode[index + x - d];//x-dæ˜¯å³è§†å›¾ä¸­indexè¡Œçš„ç¬¬x-dä¸ªåƒç´ 
 					costVolPtr(y, x, d) = (lB ^ rB).count();
 				}
 
@@ -473,26 +473,26 @@ cv::Mat CDisparityHelper::Get_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Ma
 
 /////
 
-cv::Mat CDisparityHelper::GetRight_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel) //Ö±½Ó¼ÆËãÓÒ´ú¼ÛÌå
+cv::Mat CDisparityHelper::GetRight_GradXGradY_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel) //ç›´æ¥è®¡ç®—å³ä»£ä»·ä½“
 {
 #define CENSUS_H 5
 #define CENSUS_W 7
-#define CENSUS_BIT (2*CENSUS_H*CENSUS_W-2)  //¸²¸ÇÇ°ÃæµÄCENSUS_BIT¶¨Òå
+#define CENSUS_BIT (2*CENSUS_H*CENSUS_W-2)  //è¦†ç›–å‰é¢çš„CENSUS_BITå®šä¹‰
 	Mat limg = imL.clone();
 	Mat rimg = imR.clone();
 
-	int height = imL.rows;//¸ß¶È
-	int width = imL.cols;//¿í¶È
+	int height = imL.rows;//é«˜åº¦
+	int width = imL.cols;//å®½åº¦
 
 	cv::Mat RightcostVol(1, height* width* maxLevel, CV_64F);
 	KIdx_<double, 3> rcostVolPtr((double *)RightcostVol.data, height, width, maxLevel);
 
 
-	Mat lSobelX, rSobelX; //×óÓÒÊÓÍ¼µÄSobel_XÌİ¶ÈÍ¼Ïñ
+	Mat lSobelX, rSobelX; //å·¦å³è§†å›¾çš„Sobel_Xæ¢¯åº¦å›¾åƒ
 	lSobelX = sobel_gradX(limg);
 	rSobelX = sobel_gradX(rimg);
 
-	Mat lSobelY, rSobelY; //×óÓÒÊÓÍ¼µÄSobel_YÌİ¶ÈÍ¼Ïñ
+	Mat lSobelY, rSobelY; //å·¦å³è§†å›¾çš„Sobel_Yæ¢¯åº¦å›¾åƒ
 	lSobelY = sobel_gradY(limg);
 	rSobelY = sobel_gradY(rimg);
 
@@ -501,23 +501,23 @@ cv::Mat CDisparityHelper::GetRight_GradXGradY_Census_MatchingCost(cv::Mat imL, c
 	int H_WD = CENSUS_H / 2;
 	int W_WD = CENSUS_W / 2;
 
-#define CENSUS_BIT (2*CENSUS_H*CENSUS_W-2)  //¸²¸ÇÇ°ÃæµÄCENSUS_BIT¶¨Òå
+#define CENSUS_BIT (2*CENSUS_H*CENSUS_W-2)  //è¦†ç›–å‰é¢çš„CENSUS_BITå®šä¹‰
 
 	bitset<CENSUS_BIT>* lCode = new bitset<CENSUS_BIT>[height * width];
-	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//Ã¿¸öÏñËØÓĞ80bitÎ»ĞòÁĞ
-	bitset<CENSUS_BIT>* pLCode = lCode;//lCode´æ×ÅÊı×éÊ×µØÖ·
+	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//æ¯ä¸ªåƒç´ æœ‰80bitä½åºåˆ—
+	bitset<CENSUS_BIT>* pLCode = lCode;//lCodeå­˜ç€æ•°ç»„é¦–åœ°å€
 	bitset<CENSUS_BIT>* pRCode = rCode;
 	for (int y = 0; y < height; y++) {
-		uchar* pLData = (uchar*)(lSobelX.ptr<uchar>(y));//µÚyĞĞ
+		uchar* pLData = (uchar*)(lSobelX.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* pRData = (uchar*)(rSobelX.ptr<uchar>(y));
 
-		uchar* gpLData = (uchar*)(lSobelY.ptr<uchar>(y));//µÚyĞĞ
+		uchar* gpLData = (uchar*)(lSobelY.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* gpRData = (uchar*)(rSobelY.ptr<uchar>(y));
 
-		for (int x = 0; x < width; x++) { //µÚxÁĞ
+		for (int x = 0; x < width; x++) { //ç¬¬xåˆ—
 			int bitCnt = 0;
 			for (int wy = -H_WD; wy <= H_WD; wy++) {
-				//int qy = (y + wy + height) % height;//ÕâÀï+heiÊÇÎªÁËÊµÏÖÑ­»·
+				//int qy = (y + wy + height) % height;//è¿™é‡Œ+heiæ˜¯ä¸ºäº†å®ç°å¾ªç¯
 				int qy = y + wy;
 				if (qy < 0) qy = 0;
 				if (qy >= height) qy = height - 1;
@@ -529,18 +529,18 @@ cv::Mat CDisparityHelper::GetRight_GradXGradY_Census_MatchingCost(cv::Mat imL, c
 				uchar* gqRData = (uchar*)(rSobelY.ptr<uchar>(qy));
 
 				for (int wx = -W_WD; wx <= W_WD; wx++) {
-					if (wy != 0 || wx != 0) { //ÖĞĞÄµã
+					if (wy != 0 || wx != 0) { //ä¸­å¿ƒç‚¹
 											  //int qx = (x + wx + width) % width;
 						int qx = x + wx;
 						if (qx < 0) qx = 0;
 						if (qx >= width) qx = width - 1;
 
-						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]ÊÇÖĞĞÄµã
+						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹
 						bitCnt++;
 
-						(*pLCode)[bitCnt] = (gpLData[x] > gqLData[qx]);// pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (gpRData[x] > gqRData[qx]);// pRData[ x ]ÊÇÖĞĞÄµã
+						(*pLCode)[bitCnt] = (gpLData[x] > gqLData[qx]);// pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (gpRData[x] > gqRData[qx]);// pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹
 						bitCnt++; //
 					}
 
@@ -586,7 +586,7 @@ cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv
 {
 #define CENSUS_H 7
 #define CENSUS_W 7
-#define CENSUS_BIT (3*CENSUS_H*CENSUS_W-3)  //¸²¸ÇÇ°ÃæµÄCENSUS_BIT¶¨Òå
+#define CENSUS_BIT (3*CENSUS_H*CENSUS_W-3)  //è¦†ç›–å‰é¢çš„CENSUS_BITå®šä¹‰
 
 	Mat limg = imL.clone();
 	Mat rimg = imR.clone();
@@ -611,11 +611,11 @@ cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, height, width, maxLevel);
 
 
-	Mat lSobelX, rSobelX; //×óÓÒÊÓÍ¼µÄSobel_XÌİ¶ÈÍ¼Ïñ
+	Mat lSobelX, rSobelX; //å·¦å³è§†å›¾çš„Sobel_Xæ¢¯åº¦å›¾åƒ
 	lSobelX = sobel_gradX(limg);
 	rSobelX = sobel_gradX(rimg);
 
-	Mat lSobelY, rSobelY; //×óÓÒÊÓÍ¼µÄSobel_YÌİ¶ÈÍ¼Ïñ
+	Mat lSobelY, rSobelY; //å·¦å³è§†å›¾çš„Sobel_Yæ¢¯åº¦å›¾åƒ
 	lSobelY = sobel_gradY(limg);
 	rSobelY = sobel_gradY(rimg);
 
@@ -628,22 +628,22 @@ cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv
 	int nn = CENSUS_BIT;
 
 	bitset<CENSUS_BIT>* lCode = new bitset<CENSUS_BIT>[height * width];
-	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//Ã¿¸öÏñËØÓĞ80bitÎ»ĞòÁĞ
-	bitset<CENSUS_BIT>* pLCode = lCode;//lCode´æ×ÅÊı×éÊ×µØÖ·
+	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//æ¯ä¸ªåƒç´ æœ‰80bitä½åºåˆ—
+	bitset<CENSUS_BIT>* pLCode = lCode;//lCodeå­˜ç€æ•°ç»„é¦–åœ°å€
 	bitset<CENSUS_BIT>* pRCode = rCode;
 	for (int y = 0; y < height; y++) {
-		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//µÚyĞĞ
+		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* pRData = (uchar*)(rGray.ptr<uchar>(y));
 
-		uchar* gpXLData = (uchar*)(lSobelX.ptr<uchar>(y));//µÚyĞĞ
+		uchar* gpXLData = (uchar*)(lSobelX.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* gpXRData = (uchar*)(rSobelX.ptr<uchar>(y));
 
-		uchar* gpYLData = (uchar*)(lSobelY.ptr<uchar>(y));//µÚyĞĞ
+		uchar* gpYLData = (uchar*)(lSobelY.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* gpYRData = (uchar*)(rSobelY.ptr<uchar>(y));
-		for (int x = 0; x < width; x++) { //µÚxÁĞ
+		for (int x = 0; x < width; x++) { //ç¬¬xåˆ—
 			int bitCnt = 0;
 			for (int wy = -H_WD; wy <= H_WD; wy++) {
-				//int qy = (y + wy + height) % height;//ÕâÀï+heiÊÇÎªÁËÊµÏÖÑ­»·
+				//int qy = (y + wy + height) % height;//è¿™é‡Œ+heiæ˜¯ä¸ºäº†å®ç°å¾ªç¯
 				int qy = y + wy;
 				if (qy < 0) qy = 0;
 				if (qy >= height) qy = height - 1;
@@ -656,25 +656,25 @@ cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv
 				uchar* gqYLData = (uchar*)(lSobelY.ptr<uchar>(qy));
 				uchar* gqYRData = (uchar*)(rSobelY.ptr<uchar>(qy));
 				for (int wx = -W_WD; wx <= W_WD; wx++) {
-					if (wy != 0 || wx != 0) { //ÖĞĞÄµã
+					if (wy != 0 || wx != 0) { //ä¸­å¿ƒç‚¹
 											  //int qx = (x + wx + width) % width;
 						int qx = x + wx;
 						if (qx < 0) qx = 0;
 						if (qx >= width) qx = width - 1;
 
-						//±È½Ï»Ò¶È
-						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]ÊÇÖĞĞÄµã	
+						//æ¯”è¾ƒç°åº¦
+						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹	
 						bitCnt++;
 
-						//±È½ÏX·½ÏòÌİ¶È
-						(*pLCode)[bitCnt] = (gpXLData[x] > gqXLData[qx]);// pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (gpXRData[x] > gqXRData[qx]);// pRData[ x ]ÊÇÖĞĞÄµã	
+						//æ¯”è¾ƒXæ–¹å‘æ¢¯åº¦
+						(*pLCode)[bitCnt] = (gpXLData[x] > gqXLData[qx]);// pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (gpXRData[x] > gqXRData[qx]);// pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹	
 						bitCnt++;
 
-						//±È½ÏY·½ÏòÌİ¶È£¬ÔÚ»Ò¶ÈºóÃæ½øĞĞÆ´½Ó
-						(*pLCode)[bitCnt] = (gpYLData[x] > gqYLData[qx]);// gpLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (gpYRData[x] > gqYRData[qx]);// gpRData[ x ]ÊÇÖĞĞÄµã	
+						//æ¯”è¾ƒYæ–¹å‘æ¢¯åº¦ï¼Œåœ¨ç°åº¦åé¢è¿›è¡Œæ‹¼æ¥
+						(*pLCode)[bitCnt] = (gpYLData[x] > gqYLData[qx]);// gpLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (gpYRData[x] > gqYRData[qx]);// gpRData[ x ]æ˜¯ä¸­å¿ƒç‚¹	
 						bitCnt++;
 						//
 					}
@@ -696,7 +696,7 @@ cv::Mat CDisparityHelper::Get_GrayGradXGradY_Census_MatchingCost(cv::Mat imL, cv
 			for (int d = 0; d < maxLevel; d++) {
 				costVolPtr(y, x, d) = CENSUS_BIT + 1;// INT_MAX; // 
 				if (x - d >= 0) {
-					rB = rCode[index + x - d];//x-dÊÇÓÒÊÓÍ¼ÖĞindexĞĞµÄµÚx-d¸öÏñËØ
+					rB = rCode[index + x - d];//x-dæ˜¯å³è§†å›¾ä¸­indexè¡Œçš„ç¬¬x-dä¸ªåƒç´ 
 					costVolPtr(y, x, d) = (lB ^ rB).count();
 				}
 
@@ -714,7 +714,7 @@ cv::Mat CDisparityHelper::GetRight_GrayGradXGradY_Census_MatchingCost(cv::Mat im
 {
 #define CENSUS_H 7
 #define CENSUS_W 7
-#define CENSUS_BIT (3*CENSUS_H*CENSUS_W-3)  //¸²¸ÇÇ°ÃæµÄCENSUS_BIT¶¨Òå
+#define CENSUS_BIT (3*CENSUS_H*CENSUS_W-3)  //è¦†ç›–å‰é¢çš„CENSUS_BITå®šä¹‰
 
 	Mat limg = imL.clone();
 	Mat rimg = imR.clone();
@@ -739,11 +739,11 @@ cv::Mat CDisparityHelper::GetRight_GrayGradXGradY_Census_MatchingCost(cv::Mat im
 	KIdx_<double, 3> rcostVolPtr((double *)RightcostVol.data, height, width, maxLevel);
 
 
-	Mat lSobelX, rSobelX; //×óÓÒÊÓÍ¼µÄSobel_XÌİ¶ÈÍ¼Ïñ
+	Mat lSobelX, rSobelX; //å·¦å³è§†å›¾çš„Sobel_Xæ¢¯åº¦å›¾åƒ
 	lSobelX = sobel_gradX(limg);
 	rSobelX = sobel_gradX(rimg);
 
-	Mat lSobelY, rSobelY; //×óÓÒÊÓÍ¼µÄSobel_YÌİ¶ÈÍ¼Ïñ
+	Mat lSobelY, rSobelY; //å·¦å³è§†å›¾çš„Sobel_Yæ¢¯åº¦å›¾åƒ
 	lSobelY = sobel_gradY(limg);
 	rSobelY = sobel_gradY(rimg);
 
@@ -756,22 +756,22 @@ cv::Mat CDisparityHelper::GetRight_GrayGradXGradY_Census_MatchingCost(cv::Mat im
 	int nn = CENSUS_BIT;
 
 	bitset<CENSUS_BIT>* lCode = new bitset<CENSUS_BIT>[height * width];
-	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//Ã¿¸öÏñËØÓĞ80bitÎ»ĞòÁĞ
-	bitset<CENSUS_BIT>* pLCode = lCode;//lCode´æ×ÅÊı×éÊ×µØÖ·
+	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//æ¯ä¸ªåƒç´ æœ‰80bitä½åºåˆ—
+	bitset<CENSUS_BIT>* pLCode = lCode;//lCodeå­˜ç€æ•°ç»„é¦–åœ°å€
 	bitset<CENSUS_BIT>* pRCode = rCode;
 	for (int y = 0; y < height; y++) {
-		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//µÚyĞĞ
+		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* pRData = (uchar*)(rGray.ptr<uchar>(y));
 
-		uchar* gpXLData = (uchar*)(lSobelX.ptr<uchar>(y));//µÚyĞĞ
+		uchar* gpXLData = (uchar*)(lSobelX.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* gpXRData = (uchar*)(rSobelX.ptr<uchar>(y));
 
-		uchar* gpYLData = (uchar*)(lSobelY.ptr<uchar>(y));//µÚyĞĞ
+		uchar* gpYLData = (uchar*)(lSobelY.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* gpYRData = (uchar*)(rSobelY.ptr<uchar>(y));
-		for (int x = 0; x < width; x++) { //µÚxÁĞ
+		for (int x = 0; x < width; x++) { //ç¬¬xåˆ—
 			int bitCnt = 0;
 			for (int wy = -H_WD; wy <= H_WD; wy++) {
-				//int qy = (y + wy + height) % height;//ÕâÀï+heiÊÇÎªÁËÊµÏÖÑ­»·
+				//int qy = (y + wy + height) % height;//è¿™é‡Œ+heiæ˜¯ä¸ºäº†å®ç°å¾ªç¯
 				int qy = y + wy;
 				if (qy < 0) qy = 0;
 				if (qy >= height) qy = height - 1;
@@ -784,25 +784,25 @@ cv::Mat CDisparityHelper::GetRight_GrayGradXGradY_Census_MatchingCost(cv::Mat im
 				uchar* gqYLData = (uchar*)(lSobelY.ptr<uchar>(qy));
 				uchar* gqYRData = (uchar*)(rSobelY.ptr<uchar>(qy));
 				for (int wx = -W_WD; wx <= W_WD; wx++) {
-					if (wy != 0 || wx != 0) { //ÖĞĞÄµã
+					if (wy != 0 || wx != 0) { //ä¸­å¿ƒç‚¹
 											  //int qx = (x + wx + width) % width;
 						int qx = x + wx;
 						if (qx < 0) qx = 0;
 						if (qx >= width) qx = width - 1;
 
-						//±È½Ï»Ò¶È
-						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]ÊÇÖĞĞÄµã	
+						//æ¯”è¾ƒç°åº¦
+						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]);// pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]);// pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹	
 						bitCnt++;
 
-						//±È½ÏX·½ÏòÌİ¶È
-						(*pLCode)[bitCnt] = (gpXLData[x] > gqXLData[qx]);// pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (gpXRData[x] > gqXRData[qx]);// pRData[ x ]ÊÇÖĞĞÄµã	
+						//æ¯”è¾ƒXæ–¹å‘æ¢¯åº¦
+						(*pLCode)[bitCnt] = (gpXLData[x] > gqXLData[qx]);// pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (gpXRData[x] > gqXRData[qx]);// pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹	
 						bitCnt++;
 
-						//±È½ÏY·½ÏòÌİ¶È£¬ÔÚ»Ò¶ÈºóÃæ½øĞĞÆ´½Ó
-						(*pLCode)[bitCnt] = (gpYLData[x] > gqYLData[qx]);// gpLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (gpYRData[x] > gqYRData[qx]);// gpRData[ x ]ÊÇÖĞĞÄµã	
+						//æ¯”è¾ƒYæ–¹å‘æ¢¯åº¦ï¼Œåœ¨ç°åº¦åé¢è¿›è¡Œæ‹¼æ¥
+						(*pLCode)[bitCnt] = (gpYLData[x] > gqYLData[qx]);// gpLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (gpYRData[x] > gqYRData[qx]);// gpRData[ x ]æ˜¯ä¸­å¿ƒç‚¹	
 						bitCnt++;
 						//
 					}
@@ -851,13 +851,13 @@ cv::Mat CDisparityHelper::Get_CensusPlusGradXGradYCensus_MatchingCost(cv::Mat im
 	int height = limg.rows;
 	int width = limg.cols;
 
-	Mat costVolCensus = GetCensusMatchingCost(limg, rimg, maxLevel);  //Get_ColorCensus_MatchingCost(limg, rimg, maxLevel); //GetCensusMatchingCost(limg, rimg, maxLevel);// // //  //// //¼ÆËãcensus´ú¼Û	
+	Mat costVolCensus = GetCensusMatchingCost(limg, rimg, maxLevel);  //Get_ColorCensus_MatchingCost(limg, rimg, maxLevel); //GetCensusMatchingCost(limg, rimg, maxLevel);// // //  //// //è®¡ç®—censusä»£ä»·	
 	KIdx_<double, 3> costVolCensusPtr((double *)costVolCensus.data, height, width, maxLevel);
 
 	cv::Mat costVol(1, height* width* maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, height, width, maxLevel);
 
-	//ÅĞ¶ÏÊÇ·ñ´æÔÚ¹âÕÕ±ä»¯
+	//åˆ¤æ–­æ˜¯å¦å­˜åœ¨å…‰ç…§å˜åŒ–
 	/*
 	cv::Mat lgray,rgray;
 	cvtColor(limg, lgray, CV_BGR2GRAY); cvtColor(rimg, rgray, CV_BGR2GRAY);
@@ -869,13 +869,13 @@ cv::Mat CDisparityHelper::Get_CensusPlusGradXGradYCensus_MatchingCost(cv::Mat im
 	*/
 
 	Mat gcostVolCensus;
-	bool isGradCensus = 0; // (1.0*abs(leftmean - rightmean)) / min(leftmean, rightmean) > 0.4; //¾Í¿ÉÒÔÈÏÎªÁÁ¶È±ä»¯±È½Ï´ó£¬ÊÊºÏÊ¹ÓÃÌİ¶È½øĞĞÇó½â£¿	
+	bool isGradCensus = 0; // (1.0*abs(leftmean - rightmean)) / min(leftmean, rightmean) > 0.4; //å°±å¯ä»¥è®¤ä¸ºäº®åº¦å˜åŒ–æ¯”è¾ƒå¤§ï¼Œé€‚åˆä½¿ç”¨æ¢¯åº¦è¿›è¡Œæ±‚è§£ï¼Ÿ	
 	if (isGradCensus) // using sobel Grad, or using GradX, or using GradY
 	{
 		Mat lsobel, rsobel;
 		lsobel = sobel_grad(limg);
 		rsobel = sobel_grad(rimg);
-		gcostVolCensus = GetCensusMatchingCost(lsobel, rsobel, maxLevel); //¼ÆËãcensus´ú¼Û			
+		gcostVolCensus = GetCensusMatchingCost(lsobel, rsobel, maxLevel); //è®¡ç®—censusä»£ä»·			
 	}
 	else // using GradXGradY
 	{
@@ -887,8 +887,8 @@ cv::Mat CDisparityHelper::Get_CensusPlusGradXGradYCensus_MatchingCost(cv::Mat im
 	for (int d = 0; d < maxLevel; d++) {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int rx = x - d; // left imageÖĞµÄx¶ÔÓ¦×Åright image ÖĞµÄrx
-				if (rx < 0) rx = 0; //ĞŞÕıÎª0
+				int rx = x - d; // left imageä¸­çš„xå¯¹åº”ç€right image ä¸­çš„rx
+				if (rx < 0) rx = 0; //ä¿®æ­£ä¸º0
 				{
 					//float th = 0.3333;
 					costVolPtr(y, x, d) = th * costVolCensusPtr(y, x, d) + (1 - th)*gcostVolCensusPtr(y, x, d);
@@ -909,13 +909,13 @@ cv::Mat CDisparityHelper::GetRight_CensusPlusGradXGradYCensus_MatchingCost(cv::M
 	int height = limg.rows;
 	int width = limg.cols;
 
-	Mat costVolCensus = GetRightCensusMatchingCost(limg, rimg, maxLevel); //GetRight_ColorCensus_MatchingCost(limg, rimg, maxLevel); // //GetRight_ColorCensus_MatchingCost(limg, rimg, maxLevel); // // ////  //¼ÆËãcensus´ú¼Û	
+	Mat costVolCensus = GetRightCensusMatchingCost(limg, rimg, maxLevel); //GetRight_ColorCensus_MatchingCost(limg, rimg, maxLevel); // //GetRight_ColorCensus_MatchingCost(limg, rimg, maxLevel); // // ////  //è®¡ç®—censusä»£ä»·	
 	KIdx_<double, 3> costVolCensusPtr((double *)costVolCensus.data, height, width, maxLevel);
 
 	cv::Mat costVol(1, height* width* maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, height, width, maxLevel);
 
-	//ÅĞ¶ÏÊÇ·ñ´æÔÚ¹âÕÕ±ä»¯
+	//åˆ¤æ–­æ˜¯å¦å­˜åœ¨å…‰ç…§å˜åŒ–
 	/*
 	cv::Mat lgray,rgray;
 	cvtColor(limg, lgray, CV_BGR2GRAY); cvtColor(rimg, rgray, CV_BGR2GRAY);
@@ -927,13 +927,13 @@ cv::Mat CDisparityHelper::GetRight_CensusPlusGradXGradYCensus_MatchingCost(cv::M
 	*/
 
 	Mat gcostVolCensus;
-	bool isGradCensus = 0; // (1.0*abs(leftmean - rightmean)) / min(leftmean, rightmean) > 0.4; //¾Í¿ÉÒÔÈÏÎªÁÁ¶È±ä»¯±È½Ï´ó£¬ÊÊºÏÊ¹ÓÃÌİ¶È½øĞĞÇó½â£¿	
+	bool isGradCensus = 0; // (1.0*abs(leftmean - rightmean)) / min(leftmean, rightmean) > 0.4; //å°±å¯ä»¥è®¤ä¸ºäº®åº¦å˜åŒ–æ¯”è¾ƒå¤§ï¼Œé€‚åˆä½¿ç”¨æ¢¯åº¦è¿›è¡Œæ±‚è§£ï¼Ÿ	
 	if (isGradCensus) // using sobel Grad, or using GradX, or using GradY
 	{
 		Mat lsobel, rsobel;
 		lsobel = sobel_grad(limg);
 		rsobel = sobel_grad(rimg);
-		gcostVolCensus = GetRightCensusMatchingCost(lsobel, rsobel, maxLevel); //¼ÆËãcensus´ú¼Û			
+		gcostVolCensus = GetRightCensusMatchingCost(lsobel, rsobel, maxLevel); //è®¡ç®—censusä»£ä»·			
 	}
 	else // using GradXGradY
 	{
@@ -945,8 +945,8 @@ cv::Mat CDisparityHelper::GetRight_CensusPlusGradXGradYCensus_MatchingCost(cv::M
 	for (int d = 0; d < maxLevel; d++) {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int rx = x - d; // left imageÖĞµÄx¶ÔÓ¦×Åright image ÖĞµÄrx
-				if (rx < 0) rx = 0; //ĞŞÕıÎª0
+				int rx = x - d; // left imageä¸­çš„xå¯¹åº”ç€right image ä¸­çš„rx
+				if (rx < 0) rx = 0; //ä¿®æ­£ä¸º0
 				{   //float th = 0.3333;
 					costVolPtr(y, x, d) = th * costVolCensusPtr(y, x, d) + (1 - th)*gcostVolCensusPtr(y, x, d);
 
@@ -968,25 +968,25 @@ cv::Mat CDisparityHelper::GetMatchingCost_RWR(cv::Mat imL, cv::Mat imR, int maxL
 	int height = limg.rows;
 	int width = limg.cols;
 
-	Mat costVolCensus = GetCensusMatchingCost(limg, rimg, maxLevel); //Get_Census_ColorGrad_MatchingCost(limg, rimg, maxLevel); // GetCensusMatchingCost(limg, rimg, maxLevel); //¼ÆËãcensus´ú¼Û	
+	Mat costVolCensus = GetCensusMatchingCost(limg, rimg, maxLevel); //Get_Census_ColorGrad_MatchingCost(limg, rimg, maxLevel); // GetCensusMatchingCost(limg, rimg, maxLevel); //è®¡ç®—censusä»£ä»·	
 	KIdx_<double, 3> costVolCensusPtr((double *)costVolCensus.data, height, width, maxLevel);
 
 	cv::Mat costVol(1, height* width* maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, height, width, maxLevel);
 
-	Mat lSobelX, rSobelX; //×óÓÒÊÓÍ¼µÄSobel_XÌİ¶ÈÍ¼Ïñ
+	Mat lSobelX, rSobelX; //å·¦å³è§†å›¾çš„Sobel_Xæ¢¯åº¦å›¾åƒ
 	lSobelX = sobel_gradX(limg);
 	rSobelX = sobel_gradX(rimg);
 
-	Mat lSobelY, rSobelY; //×óÓÒÊÓÍ¼µÄSobel_YÌİ¶ÈÍ¼Ïñ
+	Mat lSobelY, rSobelY; //å·¦å³è§†å›¾çš„Sobel_Yæ¢¯åº¦å›¾åƒ
 	lSobelY = sobel_gradY(limg);
 	rSobelY = sobel_gradY(rimg);
 
 	for (int d = 0; d < maxLevel; d++) {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int rx = x - d; // left imageÖĞµÄx¶ÔÓ¦×Åright image ÖĞµÄrx
-				if (rx < 0) rx = 0; //ĞŞÕıÎª0
+				int rx = x - d; // left imageä¸­çš„xå¯¹åº”ç€right image ä¸­çš„rx
+				if (rx < 0) rx = 0; //ä¿®æ­£ä¸º0
 				{
 					double deta1 = 0.2, deta2 = 1.0;
 					double T1 = 5, T2 = 1.7;
@@ -1012,25 +1012,25 @@ cv::Mat CDisparityHelper::GetRightMatchingCost_RWR(cv::Mat imL, cv::Mat imR, int
 	int height = limg.rows;
 	int width = limg.cols;
 
-	Mat costVolCensus = GetRightCensusMatchingCost(limg, rimg, maxLevel); //Get_Census_ColorGrad_MatchingCost(limg, rimg, maxLevel); // GetCensusMatchingCost(limg, rimg, maxLevel); //¼ÆËãcensus´ú¼Û	
+	Mat costVolCensus = GetRightCensusMatchingCost(limg, rimg, maxLevel); //Get_Census_ColorGrad_MatchingCost(limg, rimg, maxLevel); // GetCensusMatchingCost(limg, rimg, maxLevel); //è®¡ç®—censusä»£ä»·	
 	KIdx_<double, 3> costVolCensusPtr((double *)costVolCensus.data, height, width, maxLevel);
 
 	cv::Mat costVol(1, height* width* maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, height, width, maxLevel);
 
-	Mat lSobelX, rSobelX; //×óÓÒÊÓÍ¼µÄSobel_XÌİ¶ÈÍ¼Ïñ
+	Mat lSobelX, rSobelX; //å·¦å³è§†å›¾çš„Sobel_Xæ¢¯åº¦å›¾åƒ
 	lSobelX = sobel_gradX(limg);
 	rSobelX = sobel_gradX(rimg);
 
-	Mat lSobelY, rSobelY; //×óÓÒÊÓÍ¼µÄSobel_YÌİ¶ÈÍ¼Ïñ
+	Mat lSobelY, rSobelY; //å·¦å³è§†å›¾çš„Sobel_Yæ¢¯åº¦å›¾åƒ
 	lSobelY = sobel_gradY(limg);
 	rSobelY = sobel_gradY(rimg);
 
 	for (int d = 0; d < maxLevel; d++) {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int lx = x + d; // left imageÖĞµÄx¶ÔÓ¦×Åright image ÖĞµÄrx
-				if (lx >= width) lx = width-1; //ĞŞÕıÎª0
+				int lx = x + d; // left imageä¸­çš„xå¯¹åº”ç€right image ä¸­çš„rx
+				if (lx >= width) lx = width-1; //ä¿®æ­£ä¸º0
 				{
 					double deta1 = 0.2, deta2 = 1.0;
 					double T1 = 5, T2 = 1.7;
@@ -1055,8 +1055,8 @@ cv::Mat CDisparityHelper::GetCensusMatchingCost_kongdong(cv::Mat imL, cv::Mat im
 #define CENSUS_W 11
 #define CENSUS_BIT (CENSUS_H*CENSUS_W-1)
 
-	int height = imL.rows;//¸ß¶È
-	int width = imL.cols;//¿í¶È
+	int height = imL.rows;//é«˜åº¦
+	int width = imL.cols;//å®½åº¦
 
 
 	Mat lGray, rGray;
@@ -1080,37 +1080,37 @@ cv::Mat CDisparityHelper::GetCensusMatchingCost_kongdong(cv::Mat imL, cv::Mat im
 	int H_WD = CENSUS_H / 2;
 	int W_WD = CENSUS_W / 2;
 	bitset<CENSUS_BIT>* lCode = new bitset<CENSUS_BIT>[height * width];
-	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//Ã¿¸öÏñËØÓĞ80bitÎ»ĞòÁĞ
-	bitset<CENSUS_BIT>* pLCode = lCode;//lCode´æ×ÅÊı×éÊ×µØÖ·
+	bitset<CENSUS_BIT>* rCode = new bitset<CENSUS_BIT>[height * width];//æ¯ä¸ªåƒç´ æœ‰80bitä½åºåˆ—
+	bitset<CENSUS_BIT>* pLCode = lCode;//lCodeå­˜ç€æ•°ç»„é¦–åœ°å€
 	bitset<CENSUS_BIT>* pRCode = rCode;
 	for (int y = 0; y < height; y++) {
-		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//µÚyĞĞ
+		uchar* pLData = (uchar*)(lGray.ptr<uchar>(y));//ç¬¬yè¡Œ
 		uchar* pRData = (uchar*)(rGray.ptr<uchar>(y));
-		for (int x = 0; x < width; x++) { //µÚxÁĞ
+		for (int x = 0; x < width; x++) { //ç¬¬xåˆ—
 			int bitCnt = 0;
 			for (int wy = -H_WD; wy <= H_WD; wy = wy + 2) {
-				//int qy = (y + wy + height) % height;//ÕâÀï+heiÊÇÎªÁËÊµÏÖÑ­»·
+				//int qy = (y + wy + height) % height;//è¿™é‡Œ+heiæ˜¯ä¸ºäº†å®ç°å¾ªç¯
 				int qy = y + wy;
 				if (qy < 0) qy = 0;
 				if (qy >= height) qy = height - 1;
 				uchar* qLData = (uchar*)(lGray.ptr<uchar>(qy));
 				uchar* qRData = (uchar*)(rGray.ptr<uchar>(qy));
 				for (int wx = -W_WD; wx <= W_WD; wx = wx + 2) {
-					if (wy != 0 || wx != 0) { //ÖĞĞÄµã
+					if (wy != 0 || wx != 0) { //ä¸­å¿ƒç‚¹
 						//int qx = (x + wx + width) % width;
 						int qx = x + wx;
 						if (qx < 0) qx = 0;
 						if (qx >= width) qx = width - 1;
-						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]); // pLData[ x ]ÊÇÖĞĞÄµã
-						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]); // pRData[ x ]ÊÇÖĞĞÄµã												
+						(*pLCode)[bitCnt] = (pLData[x] > qLData[qx]); // pLData[ x ]æ˜¯ä¸­å¿ƒç‚¹
+						(*pRCode)[bitCnt] = (pRData[x] > qRData[qx]); // pRData[ x ]æ˜¯ä¸­å¿ƒç‚¹												
 						bitCnt++;
-						//0µ½79
+						//0åˆ°79
 					}
 				}
 			}
 
 			/*
-			//Ôö¼ÓÉÏÏÂ¶Ô½ÇµÄ±È½Ï
+			//å¢åŠ ä¸Šä¸‹å¯¹è§’çš„æ¯”è¾ƒ
 			int left = max(0, x - 1);
 			int right = min(x + 1, width - 1);
 			int up = max(0, y - 1);
@@ -1141,7 +1141,7 @@ cv::Mat CDisparityHelper::GetCensusMatchingCost_kongdong(cv::Mat imL, cv::Mat im
 			for (int d = 0; d < maxLevel; d++) {
 				costVolPtr(y, x, d) = CENSUS_BIT + 1; // 
 				if (x - d >= 0) {
-					rB = rCode[index + x - d];//x-dÊÇÓÒÊÓÍ¼ÖĞindexĞĞµÄµÚx-d¸öÏñËØ
+					rB = rCode[index + x - d];//x-dæ˜¯å³è§†å›¾ä¸­indexè¡Œçš„ç¬¬x-dä¸ªåƒç´ 
 					costVolPtr(y, x, d) = (lB ^ rB).count();
 				}
 
@@ -1155,7 +1155,7 @@ cv::Mat CDisparityHelper::GetCensusMatchingCost_kongdong(cv::Mat imL, cv::Mat im
 	return costVol;
 }
 
-//--------------------left imageÎª²Î¿¼Í¼Ïñ£¬AD+Census´ú¼Ûº¯Êı£¬Census ¿ÉÒÔÎªColorCensus,GrayCensusºÍGradCensusµÈ
+//--------------------left imageä¸ºå‚è€ƒå›¾åƒï¼ŒAD+Censusä»£ä»·å‡½æ•°ï¼ŒCensus å¯ä»¥ä¸ºColorCensus,GrayCensuså’ŒGradCensusç­‰
 cv::Mat CDisparityHelper::Get_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
 	Mat limg = imL.clone();
@@ -1164,13 +1164,13 @@ cv::Mat CDisparityHelper::Get_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, i
 	int height = limg.rows;
 	int width = limg.cols;
 
-	Mat costVolCensus = GetCensusMatchingCost(limg, rimg, maxLevel); //Get_Census_ColorGrad_MatchingCost(limg, rimg, maxLevel); //  //// GetCensusMatchingCost(limg, rimg, maxLevel); //¼ÆËãcensus´ú¼Û	
+	Mat costVolCensus = GetCensusMatchingCost(limg, rimg, maxLevel); //Get_Census_ColorGrad_MatchingCost(limg, rimg, maxLevel); //  //// GetCensusMatchingCost(limg, rimg, maxLevel); //è®¡ç®—censusä»£ä»·	
 	KIdx_<double, 3> costVolCensusPtr((double *)costVolCensus.data, height, width, maxLevel);
 
 	cv::Mat costVol(1, height* width* maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, height, width, maxLevel);
 
-	//ÅĞ¶ÏÊÇ·ñ´æÔÚ¹âÕÕ±ä»¯
+	//åˆ¤æ–­æ˜¯å¦å­˜åœ¨å…‰ç…§å˜åŒ–
 	/*
 	cv::Mat lgray,rgray;
 	cvtColor(limg, lgray, CV_BGR2GRAY); cvtColor(rimg, rgray, CV_BGR2GRAY);
@@ -1181,7 +1181,7 @@ cv::Mat CDisparityHelper::Get_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, i
 	leftmean = lmean.val[0]; rightmean = rmean.val[0];
 	*/
 
-	bool isGradCensus = 0; // (1.0*abs(leftmean - rightmean)) / min(leftmean, rightmean) > 0.4; //¾Í¿ÉÒÔÈÏÎªÁÁ¶È±ä»¯±È½Ï´ó£¬ÊÊºÏÊ¹ÓÃÌİ¶È½øĞĞÇó½â£¿
+	bool isGradCensus = 0; // (1.0*abs(leftmean - rightmean)) / min(leftmean, rightmean) > 0.4; //å°±å¯ä»¥è®¤ä¸ºäº®åº¦å˜åŒ–æ¯”è¾ƒå¤§ï¼Œé€‚åˆä½¿ç”¨æ¢¯åº¦è¿›è¡Œæ±‚è§£ï¼Ÿ
 	Mat gcostVolCensus;
 	if (isGradCensus)
 	{
@@ -1189,7 +1189,7 @@ cv::Mat CDisparityHelper::Get_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, i
 		lsobel = sobel_grad(limg);
 		rsobel = sobel_grad(rimg);
 
-		//gcostVolCensus = GetCensusMatchingCost(lsobel, rsobel, maxLevel); //¼ÆËãcensus´ú¼Û	
+		//gcostVolCensus = GetCensusMatchingCost(lsobel, rsobel, maxLevel); //è®¡ç®—censusä»£ä»·	
 		gcostVolCensus = Get_GradXGradY_Census_MatchingCost(limg, rimg, maxLevel);
 	}
 
@@ -1198,8 +1198,8 @@ cv::Mat CDisparityHelper::Get_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, i
 	for (int d = 0; d < maxLevel; d++) {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int rx = x - d; // left imageÖĞµÄx¶ÔÓ¦×Åright image ÖĞµÄrx
-				if (rx < 0) rx = 0; //ĞŞÕıÎª0
+				int rx = x - d; // left imageä¸­çš„xå¯¹åº”ç€right image ä¸­çš„rx
+				if (rx < 0) rx = 0; //ä¿®æ­£ä¸º0
 				{
 					cv::Vec3b &colorL = limg.at<cv::Vec3b>(y, x);
 					cv::Vec3b &colorR = rimg.at<cv::Vec3b>(y, rx);
@@ -1217,7 +1217,7 @@ cv::Mat CDisparityHelper::Get_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, i
 	return costVol;
 }
 
-//--------right imageÎª²Î¿¼Í¼Ïñ£¬AD+Census´ú¼Ûº¯Êı£¬»ò½«GrayCensusºÍGradCensus½øĞĞ¼ÓÈ¨ÇóºÍ
+//--------right imageä¸ºå‚è€ƒå›¾åƒï¼ŒAD+Censusä»£ä»·å‡½æ•°ï¼Œæˆ–å°†GrayCensuså’ŒGradCensusè¿›è¡ŒåŠ æƒæ±‚å’Œ
 cv::Mat CDisparityHelper::GetRight_AD_Census_MatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
 	Mat limg = imL.clone(); //BRG char
@@ -1226,13 +1226,13 @@ cv::Mat CDisparityHelper::GetRight_AD_Census_MatchingCost(cv::Mat imL, cv::Mat i
 	int height = limg.rows;
 	int width = limg.cols;
 
-	Mat RightcostVolCensus = GetRightCensusMatchingCost(limg, rimg, maxLevel); //¼ÆËãcensus´ú¼Û	
+	Mat RightcostVolCensus = GetRightCensusMatchingCost(limg, rimg, maxLevel); //è®¡ç®—censusä»£ä»·	
 	KIdx_<double, 3> rcostVolCensusPtr((double *)RightcostVolCensus.data, height, width, maxLevel);
 
 	cv::Mat RightcostVol(1, height* width* maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)RightcostVol.data, height, width, maxLevel);
 
-	//ÅĞ¶ÏÊÇ·ñ´æÔÚ¹âÕÕ±ä»¯
+	//åˆ¤æ–­æ˜¯å¦å­˜åœ¨å…‰ç…§å˜åŒ–
 	/*
 	cv::Mat lgray, rgray;
 	cvtColor(limg, lgray, CV_BGR2GRAY); cvtColor(rimg, rgray, CV_BGR2GRAY);
@@ -1242,7 +1242,7 @@ cv::Mat CDisparityHelper::GetRight_AD_Census_MatchingCost(cv::Mat imL, cv::Mat i
 	float       leftmean, rightmean;
 	leftmean = lmean.val[0]; rightmean = rmean.val[0];
 	*/
-	bool isGradCensus = 0;// (1.0*abs(leftmean - rightmean)) / min(leftmean, rightmean) > 0.4; //¾Í¿ÉÒÔÈÏÎªÁÁ¶È±ä»¯±È½Ï´ó£¬ÊÊºÏÊ¹ÓÃÌİ¶È½øĞĞÇó½â£¿
+	bool isGradCensus = 0;// (1.0*abs(leftmean - rightmean)) / min(leftmean, rightmean) > 0.4; //å°±å¯ä»¥è®¤ä¸ºäº®åº¦å˜åŒ–æ¯”è¾ƒå¤§ï¼Œé€‚åˆä½¿ç”¨æ¢¯åº¦è¿›è¡Œæ±‚è§£ï¼Ÿ
 	Mat gRightcostVolCensus;
 	if (isGradCensus)
 	{
@@ -1250,7 +1250,7 @@ cv::Mat CDisparityHelper::GetRight_AD_Census_MatchingCost(cv::Mat imL, cv::Mat i
 		Mat lsobel, rsobel;
 		lsobel = sobel_grad(limg);
 		rsobel = sobel_grad(rimg);
-		//gRightcostVolCensus = GetRightCensusMatchingCost(lsobel, rsobel, maxLevel); //¼ÆËãcensus´ú¼Û
+		//gRightcostVolCensus = GetRightCensusMatchingCost(lsobel, rsobel, maxLevel); //è®¡ç®—censusä»£ä»·
 		gRightcostVolCensus = Get_GradXGradY_Census_MatchingCost(limg, rimg, maxLevel);
 	}
 	KIdx_<double, 3> grcostVolCensusPtr((double *)gRightcostVolCensus.data, height, width, maxLevel);
@@ -1258,8 +1258,8 @@ cv::Mat CDisparityHelper::GetRight_AD_Census_MatchingCost(cv::Mat imL, cv::Mat i
 	for (int d = 0; d < maxLevel; d++) {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				int lx = x + d; // right imageÖĞµÄx¶ÔÓ¦×Åleft image ÖĞµÄlx
-				if (lx > width - 1) lx = width - 1; //ĞŞÕıÎª0
+				int lx = x + d; // right imageä¸­çš„xå¯¹åº”ç€left image ä¸­çš„lx
+				if (lx > width - 1) lx = width - 1; //ä¿®æ­£ä¸º0
 
 				cv::Vec3b &colorL = limg.at<cv::Vec3b>(y, lx);
 				cv::Vec3b &colorR = rimg.at<cv::Vec3b>(y, x);
@@ -1279,7 +1279,7 @@ cv::Mat CDisparityHelper::GetRight_AD_Census_MatchingCost(cv::Mat imL, cv::Mat i
 
 
 //----------------------------
-cv::Mat CDisparityHelper::GetGradient(cv::InputArray img_) { //¼ÆËãÌİ¶È
+cv::Mat CDisparityHelper::GetGradient(cv::InputArray img_) { //è®¡ç®—æ¢¯åº¦
 	cv::Mat img = img_.getMat();
 	cv::Size imageSize = img.size();
 	
@@ -1315,9 +1315,9 @@ cv::Mat CDisparityHelper::GetGradient(cv::InputArray img_) { //¼ÆËãÌİ¶È
 	return gradient;
 }
 
-cv::Mat CDisparityHelper::GetMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel) { //¸ÄĞ´ÁËyqxµÄ´úÂë£¬ÊµÏÖÔ­ÀíÒ»Ä£Ò»Ñù
-	cv::Mat gradL = GetGradient(imL); //×óÊÓÍ¼µÄÌİ¶È
-	cv::Mat gradR = GetGradient(imR); // ÓÒÊÓÍ¼µÄÌİ¶È
+cv::Mat CDisparityHelper::GetMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel) { //æ”¹å†™äº†yqxçš„ä»£ç ï¼Œå®ç°åŸç†ä¸€æ¨¡ä¸€æ ·
+	cv::Mat gradL = GetGradient(imL); //å·¦è§†å›¾çš„æ¢¯åº¦
+	cv::Mat gradR = GetGradient(imR); // å³è§†å›¾çš„æ¢¯åº¦
 
 //default: set the same as the non-local cost aggregation from QingXiong Yang in his CVPR 2012 paper
 	double max_color_difference = 7;
@@ -1344,10 +1344,10 @@ cv::Mat CDisparityHelper::GetMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel
 
 	for(int i = 0;i < maxLevel;i++) {
 		//shift the right image by i pixels
-		for(int y = 0;y < imageSize.height;y++) {//xL-i=xR£¬¹ÊÓÒÊÓÍ¼µÄÃ¿Ò»ĞĞÏòÓÒÆ½ÒÆi¸öÏñËØ£¬ÕâÑù²ÅÄÜºÍ×óÊÓÍ¼¶ÔÆë¡£
+		for(int y = 0;y < imageSize.height;y++) {//xL-i=xRï¼Œæ•…å³è§†å›¾çš„æ¯ä¸€è¡Œå‘å³å¹³ç§»iä¸ªåƒç´ ï¼Œè¿™æ ·æ‰èƒ½å’Œå·¦è§†å›¾å¯¹é½ã€‚
 			memcpy(&imShiftPtr(y, i, 0), &imRPtr(y, 0, 0), sizeof(uchar) * (imageSize.width - i) * 3);
 			memcpy(&gShiftPtr(y, i), &gradRPtr(y, 0), sizeof(float) * (imageSize.width - i));
-			for(int x = 0;x < i;x++) { //µ±ÊÓ²îÎªiÊ±£¬²¹ËùÕÚµ²µÄ²¿·Ö
+			for(int x = 0;x < i;x++) { //å½“è§†å·®ä¸ºiæ—¶ï¼Œè¡¥æ‰€é®æŒ¡çš„éƒ¨åˆ†
 				memcpy(&imShiftPtr(y, x, 0), &imRPtr(y, 0, 0), sizeof(uchar) * 3);
 				gShiftPtr(y, x) = gradRPtr(y, 0);
 			}
@@ -1371,6 +1371,7 @@ cv::Mat CDisparityHelper::GetMatchingCost(cv::Mat imL, cv::Mat imR, int maxLevel
 	return costVol;
 }
 
+/*
 cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel) {
 	// set image format
 	cv::Mat lImg = imL.clone();
@@ -1402,8 +1403,10 @@ cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_AdGradient(cv::Mat imL, cv:
 
 	return costVol;
 }
+*/
 
-cv::Mat CDisparityHelper::GetRightMatchingCost_CrossScale_AdGradient(const cv::Mat imL, const cv::Mat imR, int maxLevel) { //RGB¸ñÊ½
+/*
+cv::Mat CDisparityHelper::GetRightMatchingCost_CrossScale_AdGradient(const cv::Mat imL, const cv::Mat imR, int maxLevel) { //RGBæ ¼å¼
 																													  // set image format
 	cv::Mat lImg = imL.clone();
 	cv::Mat rImg = imR.clone();
@@ -1434,8 +1437,9 @@ cv::Mat CDisparityHelper::GetRightMatchingCost_CrossScale_AdGradient(const cv::M
 	delete[]costVol_cs;
 	return costVol;
 }
+*/
 
-
+/*
 cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_Census(cv::Mat imL, cv::Mat imR, int maxLevel) {
 	// set image format
 	cv::Mat lImg = imL.clone();
@@ -1467,7 +1471,9 @@ cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_Census(cv::Mat imL, cv::Mat
 
 	return costVol;
 }
+*/
 
+/*
 cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_CensusGradient(cv::Mat imL, cv::Mat imR, int maxLevel) {
 	// set image format
 	cv::Mat lImg = imL.clone();
@@ -1500,19 +1506,19 @@ cv::Mat CDisparityHelper::GetMatchingCost_CrossScale_CensusGradient(cv::Mat imL,
 
 	return costVol;
 }
+*/
 
-
-
-//ÏÂÃæ·â×°MeshStereoÖĞµÄ´ú¼ÛÌåµÄ¼ÆËã
-cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel) //Ê¹ÓÃMeshSteroµÄADGradiend¼ÆËã´ú¼ÛÌå
+/*
+//ä¸‹é¢å°è£…MeshStereoä¸­çš„ä»£ä»·ä½“çš„è®¡ç®—
+cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel) //ä½¿ç”¨MeshSteroçš„ADGradiendè®¡ç®—ä»£ä»·ä½“
 {
 	float GRANULARITY = 1.0;
 	MCImg<float>	gDsiL;
 	MCImg<float>	gDsiR;
-	gDsiL = ComputeAdGradientCostVolume(imL, imR, maxLevel, -1, GRANULARITY); //×óÊÓÍ¼Îª²Î¿¼ÊÓÍ¼£¬¼ÆËã³öµÄ´ú¼ÛÌå
-	//gDsiR = ComputeAdGradientCostVolume(imR, imL, maxLevel, +1, GRANULARITY); //ÓÒÊÓÍ¼Îª²Î¿¼ÊÓÍ¼£¬¼ÆËã³öµÄ´ú¼ÛÌå
+	gDsiL = ComputeAdGradientCostVolume(imL, imR, maxLevel, -1, GRANULARITY); //å·¦è§†å›¾ä¸ºå‚è€ƒè§†å›¾ï¼Œè®¡ç®—å‡ºçš„ä»£ä»·ä½“
+	//gDsiR = ComputeAdGradientCostVolume(imR, imL, maxLevel, +1, GRANULARITY); //å³è§†å›¾ä¸ºå‚è€ƒè§†å›¾ï¼Œè®¡ç®—å‡ºçš„ä»£ä»·ä½“
 
-	//ÏÂÃæ½«MCImg<float>	gDsiL×ª»»³É cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
+	//ä¸‹é¢å°†MCImg<float>	gDsiLè½¬æ¢æˆ cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1527,16 +1533,18 @@ cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdGradient(cv::Mat imL, cv:
 
 	return costVol;
 }
+*/
 
+/*
 cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_Census(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
 	float GRANULARITY = 1.0;
 	MCImg<float>	gDsiL;
 	MCImg<float>	gDsiR;
-	gDsiL = Compute9x7CensusCostVolume(imL, imR, maxLevel, -1, GRANULARITY); //×óÊÓÍ¼Îª²Î¿¼ÊÓÍ¼£¬¼ÆËã³öµÄ´ú¼ÛÌå
-																			 //gDsiR = ComputeAdCensusCostVolume(imR, imL, maxLevel, +1, GRANULARITY); //ÓÒÊÓÍ¼Îª²Î¿¼ÊÓÍ¼£¬¼ÆËã³öµÄ´ú¼ÛÌå
+	gDsiL = Compute9x7CensusCostVolume(imL, imR, maxLevel, -1, GRANULARITY); //å·¦è§†å›¾ä¸ºå‚è€ƒè§†å›¾ï¼Œè®¡ç®—å‡ºçš„ä»£ä»·ä½“
+																			 //gDsiR = ComputeAdCensusCostVolume(imR, imL, maxLevel, +1, GRANULARITY); //å³è§†å›¾ä¸ºå‚è€ƒè§†å›¾ï¼Œè®¡ç®—å‡ºçš„ä»£ä»·ä½“
 
-																			 //ÏÂÃæ½«MCImg<float>	gDsiL×ª»»³É cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
+																			 //ä¸‹é¢å°†MCImg<float>	gDsiLè½¬æ¢æˆ cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1550,16 +1558,18 @@ cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_Census(cv::Mat imL, cv::Mat
 	}
 	return costVol;
 }
+*/
 
-cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel) //Ê¹ÓÃMeshSteroµÄAdCensus¼ÆËã´ú¼ÛÌå
+/*
+cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel) //ä½¿ç”¨MeshSteroçš„AdCensusè®¡ç®—ä»£ä»·ä½“
 {
 	float GRANULARITY = 1.0;
 	MCImg<float>	gDsiL;
 	MCImg<float>	gDsiR;
-	gDsiL = ComputeAdCensusCostVolume(imL, imR, maxLevel, -1, GRANULARITY); //×óÊÓÍ¼Îª²Î¿¼ÊÓÍ¼£¬¼ÆËã³öµÄ´ú¼ÛÌå
-																			//gDsiR = ComputeAdCensusCostVolume(imR, imL, maxLevel, +1, GRANULARITY); //ÓÒÊÓÍ¼Îª²Î¿¼ÊÓÍ¼£¬¼ÆËã³öµÄ´ú¼ÛÌå
+	gDsiL = ComputeAdCensusCostVolume(imL, imR, maxLevel, -1, GRANULARITY); //å·¦è§†å›¾ä¸ºå‚è€ƒè§†å›¾ï¼Œè®¡ç®—å‡ºçš„ä»£ä»·ä½“
+																			//gDsiR = ComputeAdCensusCostVolume(imR, imL, maxLevel, +1, GRANULARITY); //å³è§†å›¾ä¸ºå‚è€ƒè§†å›¾ï¼Œè®¡ç®—å‡ºçš„ä»£ä»·ä½“
 
-																			//ÏÂÃæ½«MCImg<float>	gDsiL×ª»»³É cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
+																			//ä¸‹é¢å°†MCImg<float>	gDsiLè½¬æ¢æˆ cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1573,16 +1583,18 @@ cv::Mat CDisparityHelper::GetMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::M
 	}
 	return costVol;
 }
+*/
 
-cv::Mat CDisparityHelper::GetRightMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel) //Ê¹ÓÃMeshSteroµÄAdCensus¼ÆËã´ú¼ÛÌå
+/*
+cv::Mat CDisparityHelper::GetRightMatchingCost_MeshStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel) //ä½¿ç”¨MeshSteroçš„AdCensusè®¡ç®—ä»£ä»·ä½“
 {
 	float GRANULARITY = 1.0;
 	MCImg<float>	gDsiL;
 	MCImg<float>	gDsiR;
-	//gDsiL = ComputeAdCensusCostVolume(imL, imR, maxLevel, -1, GRANULARITY); //×óÊÓÍ¼Îª²Î¿¼ÊÓÍ¼£¬¼ÆËã³öµÄ´ú¼ÛÌå
-	gDsiR = ComputeAdCensusCostVolume(imR, imL, maxLevel, +1, GRANULARITY); //ÓÒÊÓÍ¼Îª²Î¿¼ÊÓÍ¼£¬¼ÆËã³öµÄ´ú¼ÛÌå
+	//gDsiL = ComputeAdCensusCostVolume(imL, imR, maxLevel, -1, GRANULARITY); //å·¦è§†å›¾ä¸ºå‚è€ƒè§†å›¾ï¼Œè®¡ç®—å‡ºçš„ä»£ä»·ä½“
+	gDsiR = ComputeAdCensusCostVolume(imR, imL, maxLevel, +1, GRANULARITY); //å³è§†å›¾ä¸ºå‚è€ƒè§†å›¾ï¼Œè®¡ç®—å‡ºçš„ä»£ä»·ä½“
 
-																			//ÏÂÃæ½«MCImg<float>	gDsiL×ª»»³É cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
+																			//ä¸‹é¢å°†MCImg<float>	gDsiLè½¬æ¢æˆ cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1596,14 +1608,16 @@ cv::Mat CDisparityHelper::GetRightMatchingCost_MeshStereo_AdCensus(cv::Mat imL, 
 	}
 	return costVol;
 }
+*/
 
+/*
 cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_AdGradient(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
 	float granularity = 1.0;// 1.0 / 4;
 	VECBITMAP<float> dsiL = ComputeAdGradientCostVolume_Patch(imL, imR, maxLevel, -1, granularity);
-	//VECBITMAP<float> dsiR = ComputeAdGradientCostVolume(imR, imL, maxLevel, +1, granularity);//½«ÊÓ²î·¶Î§·Å´óÁË4±¶
+	//VECBITMAP<float> dsiR = ComputeAdGradientCostVolume(imR, imL, maxLevel, +1, granularity);//å°†è§†å·®èŒƒå›´æ”¾å¤§äº†4å€
 
-	//ÏÂÃæ½«VECBITMAP<float> dsiL	×ª»»³É cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
+	//ä¸‹é¢å°†VECBITMAP<float> dsiL	è½¬æ¢æˆ cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1617,15 +1631,17 @@ cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_AdGradient(cv::Mat im
 	}
 	return costVol;
 }
+*/
 
+/*
 cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_Census(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
 	float granularity = 1.0;// 1.0 / 4;
 
 	VECBITMAP<float> dsiL = ComputeCensusTensor(imL, imR, -1, maxLevel);
-	//VECBITMAP<float> dsiR = ComputeAdGradientCostVolume(imR, imL, maxLevel, +1, granularity);//½«ÊÓ²î·¶Î§·Å´óÁË4±¶
+	//VECBITMAP<float> dsiR = ComputeAdGradientCostVolume(imR, imL, maxLevel, +1, granularity);//å°†è§†å·®èŒƒå›´æ”¾å¤§äº†4å€
 
-	//ÏÂÃæ½«VECBITMAP<float> dsiL	×ª»»³É cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
+	//ä¸‹é¢å°†VECBITMAP<float> dsiL	è½¬æ¢æˆ cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1639,16 +1655,16 @@ cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_Census(cv::Mat imL, c
 	}
 	return costVol;
 }
+*/
 
-
-
+/*
 cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
 	
 	VECBITMAP<float> dsiL = ComputeAdCensusCostVolume_Patch(imL, imR, maxLevel, -1);
-	//VECBITMAP<float> dsiR =  ComputeAdCensusCostVolume_Patch(imL, imR, maxLevel, -1);//½«ÊÓ²î·¶Î§·Å´óÁË4±¶
+	//VECBITMAP<float> dsiR =  ComputeAdCensusCostVolume_Patch(imL, imR, maxLevel, -1);//å°†è§†å·®èŒƒå›´æ”¾å¤§äº†4å€
 
-	//ÏÂÃæ½«VECBITMAP<float> dsiL	×ª»»³É cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
+	//ä¸‹é¢å°†VECBITMAP<float> dsiL	è½¬æ¢æˆ cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1662,7 +1678,9 @@ cv::Mat CDisparityHelper::GetMatchingCost_PatchMatchStereo_AdCensus(cv::Mat imL,
 	}
 	return costVol;
 }
+*/
 
+/*
 cv::Mat CDisparityHelper::GetMatchingCost_ADCensusStereo_AdCensus(cv::Mat imL, cv::Mat imR, int maxLevel)
 {
 	cv::Size imageSize = imL.size();
@@ -1689,9 +1707,11 @@ cv::Mat CDisparityHelper::GetMatchingCost_ADCensusStereo_AdCensus(cv::Mat imL, c
 
 	return costVol;
 }
+*/
 
+/*
 //-------------------------
-cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(std::string &filePathImageL, std::string &filePathImageR, int maxLevel) //Ê¹ÓÃSGMStereoµÄCensusGradient¼ÆËã´ú¼ÛÌå
+cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(std::string &filePathImageL, std::string &filePathImageR, int maxLevel) //ä½¿ç”¨SGMStereoçš„CensusGradientè®¡ç®—ä»£ä»·ä½“
 {
 	cv::Mat imL = cv::imread(filePathImageL);
 	MCImg<unsigned short> gDsiL, gDsiR;
@@ -1702,7 +1722,7 @@ cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(std::string &
 	std::cout << filePathImageR << "\n";
 	BuildCensusGradientCostVolume<unsigned short>(filePathImageL, filePathImageR, gDsiL, gDsiR, maxLevel);
 
-	//ÏÖÔÚ½«gDsiL×°±¸µ½cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);ÖĞ
+	//ç°åœ¨å°†gDsiLè£…å¤‡åˆ°cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);ä¸­
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1717,9 +1737,11 @@ cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(std::string &
 	return costVol;
 
 }
+*/
 
-//----------------------------£¬ÕâÀïÊµ¼ÊÉÏ¿ÉÒÔÍ¬Ê±ÇóµÃ ×óÓÒÁ½¸ö´ú¼ÛÌå gDsiL, gDsiR
-cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(const cv::Mat imL, const cv::Mat imR, int maxLevel) //Ê¹ÓÃSGMStereoµÄCensusGradient¼ÆËã´ú¼ÛÌå, RGB¸ñÊ½
+/*
+//----------------------------ï¼Œè¿™é‡Œå®é™…ä¸Šå¯ä»¥åŒæ—¶æ±‚å¾— å·¦å³ä¸¤ä¸ªä»£ä»·ä½“ gDsiL, gDsiR
+cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(const cv::Mat imL, const cv::Mat imR, int maxLevel) //ä½¿ç”¨SGMStereoçš„CensusGradientè®¡ç®—ä»£ä»·ä½“, RGBæ ¼å¼
 {
 	cv::Mat leftImg = imL.clone();
 	cv::Mat rightImg = imR.clone();
@@ -1733,7 +1755,7 @@ cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(const cv::Mat
 
 	BuildCensusGradientCostVolume<unsigned short>(leftImg, rightImg, gDsiL, gDsiR, maxLevel);
 
-	//ÏÖÔÚ½«gDsiL×°±¸µ½cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);ÖĞ
+	//ç°åœ¨å°†gDsiLè£…å¤‡åˆ°cv::Mat costVol(1, imageSize.area() * maxLevel, CV_32F);ä¸­
 	cv::Size imageSize = imL.size();
 	cv::Mat costVol(1, imageSize.area() * maxLevel, CV_64F);
 	KIdx_<double, 3> costVolPtr((double *)costVol.data, imageSize.height, imageSize.width, maxLevel);
@@ -1750,10 +1772,10 @@ cv::Mat CDisparityHelper::GetMatchingCost_SGMStereo_CensusGradient(const cv::Mat
 
 }
 //------------------------------------------------
-
+*/
 
 //-----------------------------------------------
-cv::Mat CDisparityHelper::GetRightMatchingCostFromLeft(cv::Mat leftVol, int w, int h, int maxLevel) { //¸ÄĞ´yqxµÄ´úÂë
+cv::Mat CDisparityHelper::GetRightMatchingCostFromLeft(cv::Mat leftVol, int w, int h, int maxLevel) { //æ”¹å†™yqxçš„ä»£ç 
 	cv::Mat rightVol = leftVol.clone();
 	KIdx_<double, 3>  leftPtr((double*)leftVol.data, h, w, maxLevel);
 	KIdx_<double, 3>  rightPtr((double*)rightVol.data, h, w, maxLevel);
@@ -1780,7 +1802,7 @@ cv::Mat CDisparityHelper::GetRightMatchingCostFromLeft(cv::Mat leftVol, int w, i
 	return rightVol;
 }
 
-//×óÓÒÒ»ÖÂĞÔ¼ì²é, ×óÓÒÒ»ÖÂĞÔ¼ì²é£¬¼ì²âÕÚµ²
+//å·¦å³ä¸€è‡´æ€§æ£€æŸ¥, å·¦å³ä¸€è‡´æ€§æ£€æŸ¥ï¼Œæ£€æµ‹é®æŒ¡
 void CDisparityHelper::Detect_occlusion_cross_check(cv::Mat &DispL, cv::Mat &DispR, cv::Mat &Mask, int maxLevel) 
 {
 	CV_Assert(DispL.type() == CV_8U&&DispR.type() == CV_8U);
